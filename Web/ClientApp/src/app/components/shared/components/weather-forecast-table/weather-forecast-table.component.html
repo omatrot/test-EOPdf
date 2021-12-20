@@ -1,0 +1,18 @@
+<table border="1">
+  <thead>
+    <tr>
+      <th class="table-title">summary</th>
+      <th class="table-title">temperature F°</th>
+      <th class="table-title">temperature C°</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of listWeatherForecast">
+      <td class="data-text">{{ item.summary }}</td>
+      <td class="data-number">{{ item.temperatureF }}</td>
+      <td class="data-number">{{ item.temperatureC }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<div>Report - Model: {{ model }} - Category: {{ category }}</div>
