@@ -375,6 +375,15 @@
       <div [innerHTML]="getDebugEnvParams"></div>
     </div>
 
+    <div *ngIf="isEOPdf">
+
+      <div class="mt-3">
+        <h2 class="text-center">Weather Forecast</h2>
+        <app-weather-forecast-table></app-weather-forecast-table>
+      </div>
+
+    </div>
+
   </div>
 
 </div>

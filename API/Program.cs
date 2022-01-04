@@ -13,6 +13,7 @@ namespace API
     {
         public static void Main(string[] args)
         {
+            EO.WebBrowser.WebView.ShowDebugUI();
             CreateHostBuilder(args).Build().Run();
         }
 

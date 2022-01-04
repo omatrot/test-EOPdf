@@ -12,6 +12,9 @@
     <Reference Include="EO.Pdf">
       <HintPath>C:\Program Files (x86)\Essential Objects\EO.Total 2021\EO.Pdf.dll</HintPath>
     </Reference>
+    <Reference Include="EO.WebBrowser">
+      <HintPath>C:\Program Files (x86)\Essential Objects\EO.Total 2021\EO.WebBrowser.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -93,19 +94,29 @@ namespace API.Controllers
                     HeaderHtmlFormat = htmlPdfHeader,
                     FooterHtmlFormat = footerPdf.ToString(),
                     MinLoadWaitTime = 3 * 1000,  // 3 seconds
-                    MaxLoadWaitTime = 10 * 1000, // 10 seconds (Timeout)
+                    MaxLoadWaitTime = 30 * 1000, // 10 seconds (Timeout)
                     UsePrintMedia = true,
-                    OutputArea = new System.Drawing.RectangleF(0.2f, 0.1f, 11.2f, 1f) // Set PDF page margins
+                    
+                    // OutputArea = new System.Drawing.RectangleF(0.2f, 0.1f, 11.2f, 1f) // Set PDF page margins
+                    // PageSize = EO.Pdf.PdfPageSizes.A4,
+
+                    //Using A4 in landscape, note that the width/height values are swapped        
+                    // PageSize = new SizeF(EO.Pdf.PdfPageSizes.A4.Height, EO.Pdf.PdfPageSizes.A4.Width)
+
+                    //Set margins to 0.5 inch on all sides
+                    OutputArea = new RectangleF(0.5f, 0.5f, 7.5f, 10f),
+                    AfterRenderPage = new EO.Pdf.PdfPageEventHandler(On_AfterRenderPage)
                 };
 
                 // -------------------------------------------------------------
                 PdfDocument doc = new PdfDocument();
+                // EO.WebBrowser.WebView.ShowDebugUI();
                 HtmlToPdf.ConvertUrl(url, doc, options);
 
-                // -------------------------------------------------------------
-                // Hide the HTML header in the first page, it doesn't work !
-                string hideHeader = @"<div style='background-color:#fff; height:27px; width:200px; text-align:center; border: 1px solid red'></div>";
-                HtmlToPdf.ConvertHtml(hideHeader, doc.Pages[0]);
+                //// -------------------------------------------------------------
+                //// Hide the HTML header in the first page, it doesn't work !
+                //string hideHeader = @"<div style='background-color:#fff; height:27px; width:200px; text-align:center; border: 1px solid red'></div>";
+                //HtmlToPdf.ConvertHtml(hideHeader, doc.Pages[0]);
 
                 using (MemoryStream ms = new MemoryStream())
                 {
@@ -130,5 +141,35 @@ namespace API.Controllers
 
         }
 
+
+        //This function is called after every page is created
+        private void On_AfterRenderPage(object sender, EO.Pdf.PdfPageEventArgs e)
+        {/*
+            ////Set the output area to the top portion of the page. Note
+            ////this does not change the output area of the original
+            ////conversion from which we are called
+            EO.Pdf.HtmlToPdf.Options.OutputArea = new RectangleF(0, 0, 8.5f, 1f);
+
+            ////Render an image and a horizontal line. Note the
+            ////second argument is the PdfPage object
+            //EO.Pdf.HtmlToPdf.ConvertHtml(@"<span>http://www.essentialobjects.com/images/logo.gif</span><br />", e.Page);
+
+            EO.Pdf.HtmlToPdf.ConvertHtml(@"
+        <img src='http://www.essentialobjects.com/images/logo.gif' >
+        <br />",
+                    e.Page);
+            */
+
+            if (e.Page.Index == 0)
+            {
+                // -------------------------------------------------------------
+                // Hide the HTML header in the first page, it doesn't work !
+                // EO.Pdf.HtmlToPdf.Options.OutputArea = new RectangleF(0, 0, 8.5f, 1f);
+                HtmlToPdf.Options.OutputArea = new System.Drawing.RectangleF(0.2f, 0.1f, 11.2f, 1f);
+                // string hideHeader = @"<div style='background-color:#fff; height:27px; width:100%; text-align:center; border: 1px solid red'></div>";
+                string hideHeader = "<div style='background-color:#fff; height:27px; text-align:center; border: 0px solid red'></div>";
+                HtmlToPdf.ConvertHtml(hideHeader, e.Page);
+            }
+        }
     }
 }
