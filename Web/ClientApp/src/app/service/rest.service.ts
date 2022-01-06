@@ -7,8 +7,8 @@ import { environment } from '../../environments/environment';
 import { WeatherForecast } from '../entity/weather-forecast';
 import { ReportRun } from '../entity/ReportRun';
 
-const endpoint1 = 'https://localhost:44310/api';
-const endpoint2 = 'https://api.my-domain.com/api';
+const endpointDev = 'https://localhost:44310/api';
+const endpointProd = 'https://dev-api.safeprotect.fr/SafeProtectWebAdminApi/api';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -50,25 +50,24 @@ export class RestService {
   public getWeatherForecast(): Observable<Array<WeatherForecast>> {
     console.log('RestService => getWeatherForecast()');
     console.log('RestService => environment.production:', environment.production);
-    return this.http.get<Array<WeatherForecast>>(`${!environment.production ? endpoint1 : endpoint2}/weatherforecast/GetData`, httpOptions);
+    return this.http.get<Array<WeatherForecast>>(`${!environment.production ? endpointDev : endpointProd}/weatherforecast/GetData`, httpOptions);
   }
 
   public createReportPDF(oReportRun: ReportRun): Observable<any> {
     console.log('RestService => getReportPDF => oReportRun:', oReportRun);
-    return this.http.post<ReportRun>(`${!environment.production ? endpoint1 : endpoint2}/weatherforecast/CreateReportPDF`, oReportRun);
+    return this.http.post<ReportRun>(`${!environment.production ? endpointDev : endpointProd}/weatherforecast/CreateReportPDF`, oReportRun, httpOptions);
   }
 
-  /*
-  public getReportPDF_OLD(oReportRun: ReportRun) {
+  public getReportPDF(oReportRun: ReportRun) {
 
-    return fetch(`${!environment.production ? endpoint1 : endpoint2}/weatherforecast/DownloadReportPdf`, {
+    return fetch(`${!environment.production ? endpointDev : endpointProd}/weatherforecast/CreateReportPDF`, {
       method: 'POST',
       headers:
       {
         'Content-Type': 'application/json'
       },
       // body data type must match "Content-Type" header
-      body: JSON.stringify(oReportRun),
+      body: JSON.stringify(oReportRun)
     })
       .then(response => {
         if (!response.ok) {
@@ -78,7 +77,7 @@ export class RestService {
         return response;
       });
   }
-  */
+
 }
 
 

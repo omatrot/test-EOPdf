@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_PublishTargetUrl>\\vs-tfrontd2\c$\inetpub\wwwroot\dev-api.safeprotect.fr\SafeProtectWebAdminApi</_PublishTargetUrl>
+    <History>True|2022-01-05T15:48:55.8378019Z;False|2022-01-05T16:46:00.4295284+01:00;False|2022-01-05T16:43:42.7214546+01:00;False|2022-01-05T16:43:16.9696351+01:00;False|2022-01-05T16:42:18.0167226+01:00;False|2022-01-05T16:19:20.1386616+01:00;False|2022-01-05T16:18:16.2392939+01:00;True|2022-01-05T14:31:52.6525914+01:00;True|2022-01-05T14:26:50.9029568+01:00;True|2022-01-05T14:19:23.0634479+01:00;True|2022-01-05T13:57:59.9632838+01:00;True|2022-01-05T13:48:22.0842301+01:00;False|2022-01-05T13:47:56.1310152+01:00;True|2022-01-05T11:40:39.3170335+01:00;</History>
+  </PropertyGroup>
+</Project>

@@ -5,8 +5,10 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:dev": "ng build --c=production,dev",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "postbuild:dev": "copy restore\\web.config \"\\\\vs-tfrontd2\\c$\\inetpub\\wwwroot\\dev.safeprotect.fr\\web.config\" && xcopy dist\\test-eopdf\\*.* \"\\\\vs-tfrontd2\\c$\\inetpub\\wwwroot\\dev.safeprotect.fr\\*.*\" /Y /E"
   },
   "private": true,
   "dependencies": {

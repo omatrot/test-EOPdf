@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <Configurations>Debug;Release;Dev</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,5 +17,9 @@
       <HintPath>C:\Program Files (x86)\Essential Objects\EO.Total 2021\EO.WebBrowser.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="COPY /Y &quot;$(ProjectDir)Configuration\$(ConfigurationName)\appsettings.json&quot; &quot;$(ProjectDir)appsettings.json&quot;&#xD;&#xA;DEL  &quot;$(ProjectDir)\web.config&quot;&#xD;&#xA;if &quot;$(ConfigurationName)&quot;==&quot;Debug&quot; ( echo &quot;why, Microsoft, why&quot;) else (COPY /Y &quot;$(ProjectDir)Configuration\$(ConfigurationName)\web.config&quot; &quot;$(ProjectDir)\web.config&quot;)" />
+  </Target>
 
 </Project>

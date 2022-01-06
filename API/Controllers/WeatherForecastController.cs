@@ -1,9 +1,12 @@
 ﻿using API.Contract;
 using EO.Pdf;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -23,10 +26,20 @@ namespace API.Controllers
 
         private readonly ILogger<WeatherForecastController> _logger;
 
+        /// <summary> The application environment. </summary>
+        private readonly IWebHostEnvironment environment;
+
+        /// <summary> The configuration. </summary>
+        private readonly IConfiguration configuration;
+
         public WeatherForecastController(
+            IWebHostEnvironment environment,
+            IConfiguration configuration,
             ILogger<WeatherForecastController> logger)
         {
             _logger = logger;
+            this.configuration = configuration;
+            this.environment = environment;
         }
 
         /// <summary>
@@ -59,8 +72,29 @@ namespace API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> CreateReportPDF([FromBody] DownloadReportContract model)
         {
-            // string url = "https://api.my-domain.com/api";
-            string url = "http://localhost:4200";
+            string url = this.configuration["ClientDomain"];
+
+            // ----------------------------------------------------------------------
+            //if (environment.IsDevelopment())
+            //{
+            //    url = "http://localhost:4200";
+            //}
+            //else
+            //{
+            //    url = "https://dev.safeprotect.fr";
+            //}
+
+            // ----------------------------------------------------------------------
+            // url = http://localhost:4200/rendering?... (if it is in localhost mode)
+            //HttpRequest request = this.httpContextAccessor.HttpContext.Request;
+            //if (request.Host.HasValue)
+            //{
+            //    string host = request.Host.Host;
+            //    if (host.Equals("localhost", StringComparison.CurrentCulture))
+            //    {
+            //        url = "http://localhost:4200";
+            //    }
+            //}
 
             // ----------------------------------------------------------------------
             // url = http://localhost:4200/rendering?... (if it is in localhost mode)
@@ -86,6 +120,15 @@ namespace API.Controllers
                 footerPdf.Append(@"    </table>");
                 footerPdf.Append(@"</div>");
 
+                EO.Pdf.Runtime.AddLicense(
+                    "ahvkdpnJ4NnPnd2msSHkq+rtABm8W6m1v9uhWabCnrWfWZekzdrgpePzCOmM" +
+                    "Q5ekscu7qOno9h3Ip93zsQ/grdzBs92ucqa2wd2wW5f3Bg3EseftAxDyeuvB" +
+                    "s92ucqa2wd2xW5f69h3youbyzs2xapmkwOmMQ5ekscu7rODr/wzzrunpzx34" +
+                    "j8bl2/Tzb6n79/X1sri0AhfCne7BzueurODr/wzzrunpz7iJdabw+g7kp+rp" +
+                    "z7iJdePt9BDtrNzCnrWfWZekzRfonNzyBBDInbW4w9+4bqy2xNu0arOz/RTi" +
+                    "nuX39vTjd4SOscufWbPw+g7kp+rp9um7aOPt9BDtrNzpz7iJWZeksefgpePz" +
+                    "COmMQ5ekscufWZekzQzjnZf4Cg==");
+
                 // -------------------------------------------------------------
                 HtmlToPdfOptions options = new HtmlToPdfOptions()
                 {
@@ -96,7 +139,7 @@ namespace API.Controllers
                     MinLoadWaitTime = 3 * 1000,  // 3 seconds
                     MaxLoadWaitTime = 30 * 1000, // 10 seconds (Timeout)
                     UsePrintMedia = true,
-                    
+
                     // OutputArea = new System.Drawing.RectangleF(0.2f, 0.1f, 11.2f, 1f) // Set PDF page margins
                     // PageSize = EO.Pdf.PdfPageSizes.A4,
 
@@ -118,20 +161,42 @@ namespace API.Controllers
                 //string hideHeader = @"<div style='background-color:#fff; height:27px; width:200px; text-align:center; border: 1px solid red'></div>";
                 //HtmlToPdf.ConvertHtml(hideHeader, doc.Pages[0]);
 
-                using (MemoryStream ms = new MemoryStream())
+                if (model.Action == 0) // 0 => Create
                 {
-                    doc.Save(ms);
-                    bytesFilePdf = ms.ToArray();
-
-                    using (FileStream file = new FileStream(localFilePath, FileMode.Create, System.IO.FileAccess.Write))
+                    using (MemoryStream ms = new MemoryStream())
                     {
-                        ms.Read(bytesFilePdf, 0, (int)ms.Length);
-                        file.Write(bytesFilePdf, 0, bytesFilePdf.Length);
-                    }
-                }
-                HtmlToPdf.ClearResult();
+                        doc.Save(ms);
+                        bytesFilePdf = ms.ToArray();
 
-                return this.Ok();
+                        using (FileStream file = new FileStream(localFilePath, FileMode.Create, System.IO.FileAccess.Write))
+                        {
+                            ms.Read(bytesFilePdf, 0, (int)ms.Length);
+                            file.Write(bytesFilePdf, 0, bytesFilePdf.Length);
+                        }
+                    }
+                    HtmlToPdf.ClearResult();
+
+                    return this.Ok();
+                }
+                else if (model.Action == 1) // 1 => Download
+                {
+
+                    // -------------------------------------------------------------
+                    // Save to memory stream
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        doc.Save(ms);
+                        bytesFilePdf = ms.ToArray();
+                    }
+
+                    HtmlToPdf.ClearResult();
+
+                    // -------------------------------------------------------------
+                    // return the PDF file
+                    return this.File(bytesFilePdf, "application/pdf", "test.pdf");
+                }
+
+                return this.BadRequest("INVALID_OPERATION");
             }
             catch (Exception ex)
             {
