@@ -1,20 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Configurations>Debug;Release;Dev</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="EO.Pdf">
-      <HintPath>C:\Program Files (x86)\Essential Objects\EO.Total 2021\EO.Pdf.dll</HintPath>
+      <HintPath>..\..\..\Program Files (x86)\Essential Objects\EO.Total 2021\EO.Pdf.dll</HintPath>
     </Reference>
     <Reference Include="EO.WebBrowser">
-      <HintPath>C:\Program Files (x86)\Essential Objects\EO.Total 2021\EO.WebBrowser.dll</HintPath>
+      <HintPath>..\..\..\Program Files (x86)\Essential Objects\EO.Total 2021\EO.WebBrowser.dll</HintPath>
     </Reference>
   </ItemGroup>
 

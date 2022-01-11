@@ -76,36 +76,12 @@ namespace API.Controllers
             string url = this.configuration["ClientDomain"];
 
             // ----------------------------------------------------------------------
-            //if (environment.IsDevelopment())
-            //{
-            //    url = "http://localhost:4200";
-            //}
-            //else
-            //{
-            //    url = "https://dev.safeprotect.fr";
-            //}
-
-            // ----------------------------------------------------------------------
-            // url = http://localhost:4200/rendering?... (if it is in localhost mode)
-            //HttpRequest request = this.httpContextAccessor.HttpContext.Request;
-            //if (request.Host.HasValue)
-            //{
-            //    string host = request.Host.Host;
-            //    if (host.Equals("localhost", StringComparison.CurrentCulture))
-            //    {
-            //        url = "http://localhost:4200";
-            //    }
-            //}
-
-            // ----------------------------------------------------------------------
             // url = http://localhost:4200/rendering?... (if it is in localhost mode)
             url = string.Format("{0}/rendering?model={1}&category={2}", url, model.ModelId, model.CategoryId);
             string localFilePath = @"C:\Temp\SamplePDF\sample.pdf";
 
             try
             {
-                byte[] bytesFilePdf = null;
-
                 string pdHeader = string.Format("Report - Model: {0} - Category: {1}", model.ModelId, model.CategoryId);
                 string htmlPdfHeader = $@"<div style='text-align:center; border: 0px solid red'>{pdHeader}</div>";
                 string footerPdf_datetime = string.Format("Printed: {0}", DateTime.Now.ToString("dd/MM/yyyy HH:mm"));
@@ -124,12 +100,11 @@ namespace API.Controllers
                 // -------------------------------------------------------------
                 HtmlToPdfOptions options = new HtmlToPdfOptions()
                 {
-                    // TriggerMode = HtmlToPdfTriggerMode.Manual, // Operation timed out why "eoapi" is not defined !
                     TriggerMode = HtmlToPdfTriggerMode.Manual,
                     HeaderHtmlFormat = htmlPdfHeader,
                     FooterHtmlFormat = footerPdf.ToString(),
                     MinLoadWaitTime = 3 * 1000,  // 3 seconds
-                    MaxLoadWaitTime = 30 * 1000, // 10 seconds (Timeout)
+                    MaxLoadWaitTime = 30 * 1000, // 30 seconds (Timeout)
                     UsePrintMedia = true,
 
                     // OutputArea = new System.Drawing.RectangleF(0.2f, 0.1f, 11.2f, 1f) // Set PDF page margins
@@ -148,12 +123,12 @@ namespace API.Controllers
                 HtmlToPdf.ConvertUrl(url, doc, options);
 
                 // -------------------------------------------------------------
-                // Hide the HTML header in the first page, it doesn't work !
-                //string hideHeader = @"<div style='background-color:#fff; height:27px; width:200px; text-align:center; border: 1px solid red'></div>";
-                //HtmlToPdf.ConvertHtml(hideHeader, doc.Pages[0]);
+                byte[] bytesFilePdf = null;
 
                 if (model.Action == 0) // 0 => Create
                 {
+                    // -------------------------------------------------------------
+                    // Save to memory stream
                     using (MemoryStream ms = new MemoryStream())
                     {
                         doc.Save(ms);
@@ -165,8 +140,10 @@ namespace API.Controllers
                             file.Write(bytesFilePdf, 0, bytesFilePdf.Length);
                         }
                     }
-                    HtmlToPdf.ClearResult();
 
+                    // HtmlToPdf.ClearResult();
+                    // -------------------------------------------------------------
+                    // Operation completed. PDF file created !
                     return this.Ok();
                 }
                 else if (model.Action == 1) // 1 => Download
@@ -215,9 +192,7 @@ namespace API.Controllers
             {
                 // -------------------------------------------------------------
                 // Hide the HTML header in the first page, it doesn't work !
-                // EO.Pdf.HtmlToPdf.Options.OutputArea = new RectangleF(0, 0, 8.5f, 1f);
                 HtmlToPdf.Options.OutputArea = new System.Drawing.RectangleF(0.2f, 0.1f, 11.2f, 1f);
-                // string hideHeader = @"<div style='background-color:#fff; height:27px; width:100%; text-align:center; border: 1px solid red'></div>";
                 string hideHeader = "<div style='background-color:#fff; height:27px; text-align:center; border: 0px solid red'></div>";
                 HtmlToPdf.ConvertHtml(hideHeader, e.Page);
             }

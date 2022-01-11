@@ -1,0 +1,7 @@
+
+1. Weather Forecast component
+2. Called by EO Pdf object (message)
+3. Print mode (message)
+4. debug_env_params structure with "EXIST_ISEOPDF": "It's a function (true)" message
+5. Weather Forecast component
+6. No page header for the first page (it doesn't work !)
