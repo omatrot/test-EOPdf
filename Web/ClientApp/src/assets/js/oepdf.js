@@ -8,13 +8,13 @@
 //"eoapi" does not exist in a regular browser
 
 function jsIsEOPdf() {
-  // return (window.eoapi && eoapi.isEOPdf() ? true : false);
-  return (window.eoapi && eoapi.is_eoapi() ? true : false);
+  // return (window.eoapi && eoapi.is_eoapi() ? true : false);
+  return (window.eoapi && eoapi.isEOPdf() ? true : false);
 }
 
 function jsStartEOPdfConvert() {
-  // if (window.eoapi && eoapi.isEOPdf()) {
-  if (window.eoapi && eoapi.is_eoapi()) {
+  // if (window.eoapi && eoapi.is_eoapi()) {
+  if (window.eoapi && eoapi.isEOPdf()) {
     console.log("eoapi.convert");
     eoapi.convert();
     return true;
@@ -40,12 +40,12 @@ function chkIsDefinedEOApi() {
 function exist_isEOPdf() {
 
   if (chkIsDefinedEOApi()) {
-    if (typeof eoapi.is_eoapi === 'function') {
-      return "It's a function (" + eoapi.is_eoapi() + ")";
-    } else if (typeof eoapi.is_eoapi === 'undefined') {
+    if (typeof eoapi.isEOPdf === 'function') {
+      return "It's a function (" + eoapi.isEOPdf() + ")";
+    } else if (typeof eoapi.isEOPdf === 'undefined') {
       return "It's undefined";
     } else {
-      return "It's neither undefined nor a function. It's a « " + typeof eoapi.is_eoapi + " »";
+      return "It's neither undefined nor a function. It's a « " + typeof eoapi.isEOPdf + " »";
     }
   }
 

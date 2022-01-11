@@ -146,7 +146,7 @@ export class DashboardComponent implements OnInit {
           console.log("DashboardComponent => createReportPDF => Create response:", reponse);
         },
         (httpError) => {
-          console.log("DashboardComponent => createReportPDF => httpError:", httpError);
+          console.error("DashboardComponent => createReportPDF => httpError:", httpError);
           this.pdfCreationInProgress = false;
         },
         () => {

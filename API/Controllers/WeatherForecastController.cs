@@ -1,4 +1,5 @@
 ﻿using API.Contract;
+using API.Classes;
 using EO.Pdf;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -70,7 +71,7 @@ namespace API.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> CreateReportPDF([FromBody] DownloadReportContract model)
+        public IActionResult CreateReportPDF([FromBody] DownloadReportContract model)
         {
             string url = this.configuration["ClientDomain"];
 
@@ -120,15 +121,6 @@ namespace API.Controllers
                 footerPdf.Append(@"    </table>");
                 footerPdf.Append(@"</div>");
 
-                EO.Pdf.Runtime.AddLicense(
-                    "ahvkdpnJ4NnPnd2msSHkq+rtABm8W6m1v9uhWabCnrWfWZekzdrgpePzCOmM" +
-                    "Q5ekscu7qOno9h3Ip93zsQ/grdzBs92ucqa2wd2wW5f3Bg3EseftAxDyeuvB" +
-                    "s92ucqa2wd2xW5f69h3youbyzs2xapmkwOmMQ5ekscu7rODr/wzzrunpzx34" +
-                    "j8bl2/Tzb6n79/X1sri0AhfCne7BzueurODr/wzzrunpz7iJdabw+g7kp+rp" +
-                    "z7iJdePt9BDtrNzCnrWfWZekzRfonNzyBBDInbW4w9+4bqy2xNu0arOz/RTi" +
-                    "nuX39vTjd4SOscufWbPw+g7kp+rp9um7aOPt9BDtrNzpz7iJWZeksefgpePz" +
-                    "COmMQ5ekscufWZekzQzjnZf4Cg==");
-
                 // -------------------------------------------------------------
                 HtmlToPdfOptions options = new HtmlToPdfOptions()
                 {
@@ -153,11 +145,10 @@ namespace API.Controllers
 
                 // -------------------------------------------------------------
                 PdfDocument doc = new PdfDocument();
-                // EO.WebBrowser.WebView.ShowDebugUI();
                 HtmlToPdf.ConvertUrl(url, doc, options);
 
-                //// -------------------------------------------------------------
-                //// Hide the HTML header in the first page, it doesn't work !
+                // -------------------------------------------------------------
+                // Hide the HTML header in the first page, it doesn't work !
                 //string hideHeader = @"<div style='background-color:#fff; height:27px; width:200px; text-align:center; border: 1px solid red'></div>";
                 //HtmlToPdf.ConvertHtml(hideHeader, doc.Pages[0]);
 
@@ -189,8 +180,7 @@ namespace API.Controllers
                         bytesFilePdf = ms.ToArray();
                     }
 
-                    HtmlToPdf.ClearResult();
-
+                    // HtmlToPdf.ClearResult();
                     // -------------------------------------------------------------
                     // return the PDF file
                     return this.File(bytesFilePdf, "application/pdf", "test.pdf");
@@ -201,7 +191,7 @@ namespace API.Controllers
             catch (Exception ex)
             {
                 // Conversion failed. Operation timed out while waiting manual trigger to be called.
-                return this.BadRequest("UNEXPECTED_ERROR");
+                return this.BadRequest(new SerializeException(ex));
             }
 
         }
@@ -209,20 +199,16 @@ namespace API.Controllers
 
         //This function is called after every page is created
         private void On_AfterRenderPage(object sender, EO.Pdf.PdfPageEventArgs e)
-        {/*
-            ////Set the output area to the top portion of the page. Note
-            ////this does not change the output area of the original
-            ////conversion from which we are called
+        {
+            /*
+            //Set the output area to the top portion of the page. Note
+            //this does not change the output area of the original
+            //conversion from which we are called
             EO.Pdf.HtmlToPdf.Options.OutputArea = new RectangleF(0, 0, 8.5f, 1f);
 
-            ////Render an image and a horizontal line. Note the
-            ////second argument is the PdfPage object
+            //Render an image and a horizontal line. Note the
+            //second argument is the PdfPage object
             //EO.Pdf.HtmlToPdf.ConvertHtml(@"<span>http://www.essentialobjects.com/images/logo.gif</span><br />", e.Page);
-
-            EO.Pdf.HtmlToPdf.ConvertHtml(@"
-        <img src='http://www.essentialobjects.com/images/logo.gif' >
-        <br />",
-                    e.Page);
             */
 
             if (e.Page.Index == 0)

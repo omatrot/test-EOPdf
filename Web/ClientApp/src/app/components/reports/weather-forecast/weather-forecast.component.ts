@@ -36,7 +36,10 @@ export class WeatherForecastComponent implements OnInit {
     this.debug_env_params.EXIST_ISEOPDF = exist_isEOPdf();
     this.debug_env_params.EXIST_CONVERT = exist_convert();
 
+    console.log("WeatherForecast Component => debug_env_params", this.debug_env_params);
+
     setTimeout(() => {
+      console.log("WeatherForecast Component => call jsStartEOPdfConvert");
       jsStartEOPdfConvert();
     }, 1000);
   }
