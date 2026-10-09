@@ -78,16 +78,6 @@ namespace API.Controllers
             string pdHeader = "Report Header";
 
             // ----------------------------------------------------------------------
-            //if (environment.IsDevelopment())
-            //{
-            //    url = "http://localhost:4200";
-            //}
-            //else
-            //{
-            //    url = "https://dev.safeprotect.fr";
-            //}
-
-            // ----------------------------------------------------------------------
             // url = http://localhost:4200/rendering?... (if it is in localhost mode)
             //HttpRequest request = this.httpContextAccessor.HttpContext.Request;
             //if (request.Host.HasValue)
@@ -287,9 +277,7 @@ namespace API.Controllers
             {
                 // -------------------------------------------------------------
                 // Hide the HTML header in the first page, it doesn't work !
-                // EO.Pdf.HtmlToPdf.Options.OutputArea = new RectangleF(0, 0, 8.5f, 1f);
                 HtmlToPdf.Options.OutputArea = new System.Drawing.RectangleF(0.2f, 0.1f, 11.2f, 1f);
-                // string hideHeader = @"<div style='background-color:#fff; height:27px; width:100%; text-align:center; border: 1px solid red'></div>";
                 string hideHeader = "<div style='background-color:#fff; height:27px; text-align:center; border: 0px solid red'></div>";
                 HtmlToPdf.ConvertHtml(hideHeader, e.Page);
             }

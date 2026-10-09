@@ -8,14 +8,13 @@
 //"eoapi" does not exist in a regular browser
 
 function jsIsEOPdf() {
-  // return (window.eoapi && eoapi.is_eoapi() ? true : false);
   return (window.eoapi && eoapi.isEOPdf() ? true : false);
 }
 
 function jsStartEOPdfConvert() {
-  // if (window.eoapi && eoapi.is_eoapi()) {
+
   if (window.eoapi && eoapi.isEOPdf()) {
-    console.log("eoapi.convert");
+    console.log("eoapi.convert called !");
     eoapi.convert();
     return true;
   }
