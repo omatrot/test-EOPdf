@@ -78,6 +78,27 @@ export class RestService {
       });
   }
 
+
+  public getDumpPDF(oReportRun: ReportRun) {
+
+    return fetch(`${!environment.production ? endpointDev : endpointProd}/weatherforecast/CreateReportPDF`, {
+      method: 'POST',
+      headers:
+      {
+        'Content-Type': 'application/json'
+      },
+      // body data type must match "Content-Type" header
+      body: JSON.stringify(oReportRun)
+    })
+      .then(response => {
+        if (!response.ok) {
+          console.log("getReportPDF => Fetch POST Errors =>", response.statusText, response);
+          throw Error(response.statusText);
+        }
+        return response;
+      });
+  }
+
 }
 
 

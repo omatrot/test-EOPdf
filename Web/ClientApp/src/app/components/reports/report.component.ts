@@ -14,7 +14,7 @@ export class ReportComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.router.navigate(['weatherforecast'], { relativeTo: this.activatedRoute });
+    // this.router.navigate(['weatherforecast'], { relativeTo: this.activatedRoute });
   }
 
 }

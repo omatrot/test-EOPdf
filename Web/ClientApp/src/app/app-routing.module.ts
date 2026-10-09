@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { NotFoundComponent } from './components/shared/components/not-found/not-found.component';
 import { RenderingComponent } from './components/shared/components/rendering/rendering.component';
+import { Rendering2Component } from './components/shared/components/rendering2/rendering2.component';
 
 const routes: Routes = [
   {
@@ -15,6 +16,7 @@ const routes: Routes = [
   },
   { path: '', redirectTo: 'default', pathMatch: 'full' },
   { path: 'rendering', component: RenderingComponent },
+  { path: 'rendering2', component: Rendering2Component },
   { path: 'not-found', component: NotFoundComponent },
   { path: '**', redirectTo: '/not-found' },
 ];

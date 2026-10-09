@@ -2,10 +2,24 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "forceConsistentCasingInFileNames": false,
+    "allowJs": true,
+    "baseUrl": "./",
     "outDir": "./out-tsc/spec",
+    "sourceMap": true,
+    "declaration": false,
+    "module": "es2020",
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "target": "ES2022",
     "types": [
       "jasmine"
-    ]
+    ],
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "useDefineForClassFields": false,
+    "strict": false
   },
   "files": [
     "src/test.ts",
@@ -14,5 +28,7 @@
   "include": [
     "src/**/*.spec.ts",
     "src/**/*.d.ts"
-  ]
+  ],
+  "angularCompilerOptions": {
+  }
 }

@@ -1,7 +1,34 @@
+import { AfterViewInit, Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-rendering',
+  templateUrl: './rendering.component.html',
+  styleUrls: ['./rendering.component.css']
+})
+export class RenderingComponent implements AfterViewInit {
+
+  constructor() {
+  }
+
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      const eoapi = (window as any).eoapi;
+      if (eoapi?.PDF) {
+        eoapi.PDF.print();
+      }
+    }, 1000);
+  }
+
+}
+
+
+
+/*
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Router } from '@angular/router';
 
+import { IRenderingParams } from 'src/app/components/shared/interfaces/IRenderingParams';
 import { STORAGE_KEY } from 'src/app/app.constants';
 
 // use the javascript functions
@@ -22,7 +49,7 @@ declare function exist_convert(): any;
 })
 export class RenderingComponent implements OnInit {
 
-  public renderingInfos: IRenderingParams = null;
+  public renderingInfos: IRenderingParams | null = null;
   public debug_env_params: any = {};
 
   private isInitOk: boolean = true;
@@ -100,15 +127,20 @@ export class RenderingComponent implements OnInit {
       this.router.navigateByUrl(urlReportToCall);
 
       // ------------------------------------------------------------------------------
-      // For DEBUG / Test display Errors
+      // For DEBUGGING / Test display Errors
       // this.isInitOk = false;
-      //setTimeout(() => {
-      //  jsStartEOPdfConvert();
-      //}, 1000);
+      // setTimeout(() => {
+      //   jsStartEOPdfConvert();
+      // }, 1000);
 
     }
     else {
       jsStartEOPdfConvert();
+      // setTimeout(() => {
+      //   if ((window as any).eoapi && (window as any).eoapi.PDF) {
+      //     (window as any).eoapi.PDF.print();
+      //   }
+      // }, 1000);
     }
 
   }
@@ -151,6 +183,7 @@ export class RenderingComponent implements OnInit {
     return isQueryStringValid ? newRenderingInfos : null;
   }
 
+
   get isError(): boolean {
     return !this.isInitOk
   }
@@ -163,9 +196,7 @@ export class RenderingComponent implements OnInit {
   }
 
   get isEOPdf(): boolean { return jsIsEOPdf() };
-}
 
-interface IRenderingParams {
-  categoryId: number;
-  modelId: number;
+
 }
+*/

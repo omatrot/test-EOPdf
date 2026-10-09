@@ -74,6 +74,8 @@ namespace API.Controllers
         public IActionResult CreateReportPDF([FromBody] DownloadReportContract model)
         {
             string url = this.configuration["ClientDomain"];
+            string localFilePath = @"D:\Temp\SamplePDF\sample.pdf";
+            string pdHeader = "Report Header";
 
             // ----------------------------------------------------------------------
             //if (environment.IsDevelopment())
@@ -97,18 +99,33 @@ namespace API.Controllers
             //    }
             //}
 
-            // ----------------------------------------------------------------------
+            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
             // url = http://localhost:4200/rendering?... (if it is in localhost mode)
-            url = string.Format("{0}/rendering?model={1}&category={2}", url, model.ModelId, model.CategoryId);
-            string localFilePath = @"C:\Temp\SamplePDF\sample.pdf";
+            if (model.Action == 0 || model.Action == 1) // 
+            {
+                url = string.Format("{0}/rendering?model={1}&category={2}", url, model.ModelId, model.CategoryId);
+                pdHeader = string.Format("Report - Model: {0} - Category: {1}", model.ModelId, model.CategoryId);
+                localFilePath = @"D:\Temp\SamplePDF\sample.pdf";
+            }
+            else if (model.Action == 2) // Dump localstorage
+            {
+                url = string.Format("{0}/rendering2?miki={1}&mouse={2}", url, model.ModelId, model.CategoryId);
+                pdHeader = string.Format("Report - Miki: {0} - Mouse: {1}", model.ModelId, model.CategoryId);
+                localFilePath = @"D:\Temp\SamplePDF\localstorage.pdf";
+            }
+            else
+            {
+                return this.BadRequest("INVALID_OPERATION");
+            }
 
             try
             {
                 byte[] bytesFilePdf = null;
 
-                string pdHeader = string.Format("Report - Model: {0} - Category: {1}", model.ModelId, model.CategoryId);
                 string htmlPdfHeader = $@"<div style='text-align:center; border: 0px solid red'>{pdHeader}</div>";
                 string footerPdf_datetime = string.Format("Printed: {0}", DateTime.Now.ToString("dd/MM/yyyy HH:mm"));
+                // string pdHeader = string.Format("Report - Model: {0} - Category: {1}", model.ModelId, model.CategoryId);
 
                 System.Text.StringBuilder footerPdf = new System.Text.StringBuilder();
                 footerPdf.Append(@"<div style='text-align:center; border: 0px solid red'>");
@@ -121,16 +138,25 @@ namespace API.Controllers
                 footerPdf.Append(@"    </table>");
                 footerPdf.Append(@"</div>");
 
+                EO.Pdf.Runtime.AddLicense(
+                   "ahvkdpnJ4NnPnd2msSHkq+rtABm8W6m1v9uhWabCnrWfWZekzdrgpePzCOmM" +
+                   "Q5ekscu7qOno9h3Ip93zsQ/grdzBs92ucqa2wd2wW5f3Bg3EseftAxDyeuvB" +
+                   "s92ucqa2wd2xW5f69h3youbyzs2xapmkwOmMQ5ekscu7rODr/wzzrunpzx34" +
+                   "j8bl2/Tzb6n79/X1sri0AhfCne7BzueurODr/wzzrunpz7iJdabw+g7kp+rp" +
+                   "z7iJdePt9BDtrNzCnrWfWZekzRfonNzyBBDInbW4w9+4bqy2xNu0arOz/RTi" +
+                   "nuX39vTjd4SOscufWbPw+g7kp+rp9um7aOPt9BDtrNzpz7iJWZeksefgpePz" +
+                   "COmMQ5ekscufWZekzQzjnZf4Cg==");
+
                 // -------------------------------------------------------------
                 HtmlToPdfOptions options = new HtmlToPdfOptions()
                 {
                     // TriggerMode = HtmlToPdfTriggerMode.Manual, // Operation timed out why "eoapi" is not defined !
-                    TriggerMode = HtmlToPdfTriggerMode.Manual,
+                    TriggerMode = HtmlToPdfTriggerMode.Auto,
                     HeaderHtmlFormat = htmlPdfHeader,
                     FooterHtmlFormat = footerPdf.ToString(),
                     MinLoadWaitTime = 3 * 1000,  // 3 seconds
-                    MaxLoadWaitTime = 30 * 1000, // 10 seconds (Timeout)
-                    UsePrintMedia = true,
+                    MaxLoadWaitTime = 30 * 1000, // 30 seconds (Timeout)
+                    UsePrintMedia = false, // true : to apply @css media print { ... } rules
 
                     // OutputArea = new System.Drawing.RectangleF(0.2f, 0.1f, 11.2f, 1f) // Set PDF page margins
                     // PageSize = EO.Pdf.PdfPageSizes.A4,
@@ -143,59 +169,105 @@ namespace API.Controllers
                     AfterRenderPage = new EO.Pdf.PdfPageEventHandler(On_AfterRenderPage)
                 };
 
-                // -------------------------------------------------------------
-                PdfDocument doc = new PdfDocument();
-                HtmlToPdf.ConvertUrl(url, doc, options);
-
-                // -------------------------------------------------------------
-                // Hide the HTML header in the first page, it doesn't work !
-                //string hideHeader = @"<div style='background-color:#fff; height:27px; width:200px; text-align:center; border: 1px solid red'></div>";
-                //HtmlToPdf.ConvertHtml(hideHeader, doc.Pages[0]);
-
-                if (model.Action == 0) // 0 => Create
+                if (model.Action < 3)
                 {
-                    using (MemoryStream ms = new MemoryStream())
-                    {
-                        doc.Save(ms);
-                        bytesFilePdf = ms.ToArray();
-
-                        using (FileStream file = new FileStream(localFilePath, FileMode.Create, System.IO.FileAccess.Write))
-                        {
-                            ms.Read(bytesFilePdf, 0, (int)ms.Length);
-                            file.Write(bytesFilePdf, 0, bytesFilePdf.Length);
-                        }
-                    }
-                    HtmlToPdf.ClearResult();
-
-                    return this.Ok();
-                }
-                else if (model.Action == 1) // 1 => Download
-                {
+                    PdfDocument doc = new PdfDocument();
+                    HtmlToPdf.ConvertUrl(url, doc, options);
+                    //HtmlToPdf.ConvertUrl("https://www.google.com", doc, options);
+                    //HtmlToPdf.ConvertUrl("https://www.essentialobjects.com/download", doc, options);
 
                     // -------------------------------------------------------------
-                    // Save to memory stream
-                    using (MemoryStream ms = new MemoryStream())
+                    //var html = "<html><body><div style='font-size:30px'>TEST PDF</div></body></html>";
+                    //var doc = new PdfDocument();
+                    //HtmlToPdf.ConvertHtml(html, doc, options);
+
+                    // -------------------------------------------------------------
+                    // Hide the HTML header in the first page, it doesn't work !
+                    //string hideHeader = @"<div style='background-color:#fff; height:27px; width:200px; text-align:center; border: 1px solid red'></div>";
+                    //HtmlToPdf.ConvertHtml(hideHeader, doc.Pages[0]);
+
+                    if (model.Action == 0) // 0 => Create
                     {
-                        doc.Save(ms);
-                        bytesFilePdf = ms.ToArray();
+                        using (MemoryStream ms = new MemoryStream())
+                        {
+                            doc.Save(ms);
+                            bytesFilePdf = ms.ToArray();
+
+                            using (FileStream file = new FileStream(localFilePath, FileMode.Create, System.IO.FileAccess.Write))
+                            {
+                                ms.Read(bytesFilePdf, 0, (int)ms.Length);
+                                file.Write(bytesFilePdf, 0, bytesFilePdf.Length);
+                            }
+                        }
+                        HtmlToPdf.ClearResult();
+
+                        return this.Ok();
                     }
+                    else if ((model.Action == 1) || (model.Action == 2)) // 1 => Download PDF, 2 => Download dump PDF
+                    {
+
+                        // -------------------------------------------------------------
+                        // Save to memory stream
+                        using (MemoryStream ms = new MemoryStream())
+                        {
+                            doc.Save(ms);
+                            bytesFilePdf = ms.ToArray();
+                        }
+
+                        // HtmlToPdf.ClearResult();
+                        // -------------------------------------------------------------
+                        // return the PDF file
+                        return this.File(bytesFilePdf, "application/pdf", "test.pdf");
+                    }
+                }
+                /* else
+                {
+                    int remoteNumbersLength = 4;
+                    List<byte[]> files = new List<byte[]>();
+
+                    await Task.Run(() =>
+                    {
+                        Parallel.For(0, remoteNumbersLength, parallelOptions: new() { MaxDegreeOfParallelism = 4 }, numberIndex =>
+                        {
+                            int miki = model.ModelId * numberIndex;
+                            int mouse = model.CategoryId * numberIndex;
+
+                            pdHeader = string.Format("Report {0} - Miki: {1} - Mouse: {2}", numberIndex + 1, miki, mouse);
+                            options.HeaderHtmlFormat = $@"<div style='text-align:center; border: 0px solid red'>{pdHeader}</div>";
+                            url = string.Format("{0}/rendering2?miki={1}&mouse={2}", this.configuration["ClientDomain"], miki, mouse);
+
+                            PdfDocument doc = new PdfDocument();
+                            HtmlToPdf.ConvertUrl(url, doc, options);
+
+                            byte[] bytesFilePdf;
+                            using (MemoryStream ms = new MemoryStream())
+                            {
+                                doc.Save(ms);
+                                bytesFilePdf = ms.ToArray();
+                            }
+
+                            files.Add(bytesFilePdf);
+                        });
+                    }).ConfigureAwait(continueOnCapturedContext: false);
 
                     // HtmlToPdf.ClearResult();
                     // -------------------------------------------------------------
-                    // return the PDF file
-                    return this.File(bytesFilePdf, "application/pdf", "test.pdf");
-                }
+                    // return the PDF file but, only one !
+                    return this.File(files[0], "application/pdf", "test.pdf");
+                } */
 
                 return this.BadRequest("INVALID_OPERATION");
             }
             catch (Exception ex)
             {
                 // Conversion failed. Operation timed out while waiting manual trigger to be called.
-                return this.BadRequest(new SerializeException(ex));
+                //return this.BadRequest(new SerializeException(ex));
+
+                var message = ex.ToString();
+                _logger.LogError(message);
+                return this.StatusCode(500, message);
             }
-
         }
-
 
         //This function is called after every page is created
         private void On_AfterRenderPage(object sender, EO.Pdf.PdfPageEventArgs e)

@@ -1,25 +1,33 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <Configurations>Debug;Release;Dev</Configurations>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net7.0-windows</TargetFramework>
+		<Configurations>Debug;Release;Dev</Configurations>
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+		<UseWindowsForms>true</UseWindowsForms>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.3.0" />
+		<PackageReference Include="System.Drawing.Common" Version="7.0.0" />
+		<PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="EO.Pdf">
-      <HintPath>C:\Program Files (x86)\Essential Objects\EO.Total 2021\EO.Pdf.dll</HintPath>
-    </Reference>
-    <Reference Include="EO.WebBrowser">
-      <HintPath>C:\Program Files (x86)\Essential Objects\EO.Total 2021\EO.WebBrowser.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+	<ItemGroup>
+	  <Reference Include="EO.Pdf">
+	    <HintPath>C:\Program Files\Essential Objects\EO.Total 2026\EO.Pdf.dll</HintPath>
+	  </Reference>
+	  <Reference Include="EO.WebBrowser">
+	    <HintPath>C:\Program Files\Essential Objects\EO.Total 2026\EO.WebBrowser.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="COPY /Y &quot;$(ProjectDir)Configuration\$(ConfigurationName)\appsettings.json&quot; &quot;$(ProjectDir)appsettings.json&quot;&#xD;&#xA;DEL  &quot;$(ProjectDir)\web.config&quot;&#xD;&#xA;if &quot;$(ConfigurationName)&quot;==&quot;Debug&quot; ( echo &quot;why, Microsoft, why&quot;) else (COPY /Y &quot;$(ProjectDir)Configuration\$(ConfigurationName)\web.config&quot; &quot;$(ProjectDir)\web.config&quot;)" />
-  </Target>
+	<ItemGroup>
+		<RuntimeHostConfigurationOption Include="System.Drawing.EnableUnixSupport" Value="false" />
+	</ItemGroup>
+
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+		<Exec Command="COPY /Y &quot;$(ProjectDir)Configuration\$(ConfigurationName)\appsettings.json&quot; &quot;$(ProjectDir)appsettings.json&quot;&#xD;&#xA;DEL  &quot;$(ProjectDir)\web.config&quot;&#xD;&#xA;if &quot;$(ConfigurationName)&quot;==&quot;Debug&quot; ( echo &quot;why, Microsoft, why&quot;) else (COPY /Y &quot;$(ProjectDir)Configuration\$(ConfigurationName)\web.config&quot; &quot;$(ProjectDir)\web.config&quot;)" />
+	</Target>
 
 </Project>

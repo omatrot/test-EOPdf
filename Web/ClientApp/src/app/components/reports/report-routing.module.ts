@@ -3,12 +3,16 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { ReportComponent } from 'src/app/components/reports/report.component';
 import { WeatherForecastComponent } from 'src/app/components/reports/weather-forecast/weather-forecast.component';
+import { DumpLocalStorageComponent } from 'src/app/components/reports/dump-local-storage/dump-local-storage.component';
 
 const reportRoutes: Routes = [
   {
-    path: '', component: ReportComponent,
+    path: '',
+    component: ReportComponent,
     children: [
-      { path: 'weatherforecast', component: WeatherForecastComponent }
+      { path: '', redirectTo: 'dumplocalstorage', pathMatch: 'full' },
+      { path: 'weatherforecast', component: WeatherForecastComponent },
+      { path: 'dumplocalstorage', component: DumpLocalStorageComponent },
     ]
   },
 ];
